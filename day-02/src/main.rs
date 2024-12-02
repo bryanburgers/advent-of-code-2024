@@ -7,33 +7,62 @@ fn main() -> anyhow::Result<()> {
         .ok_or_else(|| anyhow::anyhow!("input required"))?;
     let input = std::fs::read_to_string(input)?;
 
-    let mut count = 0;
+    let mut count_part_a = 0;
+    let mut count_part_b = 0;
     for line in input.trim().lines() {
-        fn is_proper_distance(a: i32, b: i32) -> bool {
-            let diff = a.abs_diff(b);
-            diff >= 1 && diff <= 3
-        }
-
         let parts = line
             .split_whitespace()
             .map(|word| word.parse::<i32>().unwrap())
             .collect::<Vec<_>>();
-        let (first, rest) = parts.split_first().unwrap();
-        let (_, valid, direction) = rest.into_iter().fold(
-            (*first, true, Direction::Either),
-            |(previous, valid, direction), &current| {
-                let direction = direction | Direction::from_pair(previous, current);
-                let valid = valid && is_proper_distance(previous, current);
-                (current, valid, direction)
-            },
-        );
-        if valid && matches!(direction, Direction::Increasing | Direction::Decreasing) {
-            count += 1;
+        if is_valid_part_a(&parts) {
+            count_part_a += 1;
+        }
+        if is_valid_part_b_brute_force(&parts) {
+            count_part_b += 1;
         }
     }
-    println!("{count}");
+    println!("{count_part_a}");
+    println!("{count_part_b}");
 
     Ok(())
+}
+
+fn is_valid_part_a(input: &[i32]) -> bool {
+    fn is_proper_distance(a: i32, b: i32) -> bool {
+        let diff = a.abs_diff(b);
+        diff >= 1 && diff <= 3
+    }
+
+    let mut direction = Direction::Either;
+    for i in 0..input.len() - 1 {
+        let left = input[i];
+        let right = input[i + 1];
+        if !is_proper_distance(left, right) {
+            return false;
+        }
+        direction = direction | Direction::from_pair(left, right);
+    }
+    matches!(direction, Direction::Increasing | Direction::Decreasing)
+}
+
+fn is_valid_part_b_brute_force(input: &[i32]) -> bool {
+    if is_valid_part_a(input) {
+        return true;
+    }
+
+    for i in 0..input.len() {
+        let parts = input
+            .into_iter()
+            .enumerate()
+            .filter(|(idx, _)| *idx != i)
+            .map(|(_, x)| *x)
+            .collect::<Vec<_>>();
+        if is_valid_part_a(&parts) {
+            return true;
+        }
+    }
+
+    false
 }
 
 #[derive(Debug)]
