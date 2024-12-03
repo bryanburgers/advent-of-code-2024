@@ -9,14 +9,8 @@ wit-bindgen-rt = { version = "0.36.0", features = ["bitflags"] }
 [lib]
 crate-type = ["cdylib"]
 
-[profile.release]
-codegen-units = 1
-opt-level = "s"
-debug = false
-strip = true
-lto = true
-
 [package.metadata.component]
 package = "aoc2024:day01-solver"
 
-[package.metadata.component.dependencies]
+[package.metadata.component.target.dependencies]
+"aoc2024:day01" = { path = "../wit" }

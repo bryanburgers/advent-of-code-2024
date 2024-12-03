@@ -1,11 +1,9 @@
 #[allow(warnings)]
 mod bindings;
 
-use bindings::Guest;
-
 struct Component;
 
-impl Guest for Component {
+impl bindings::exports::aoc2024::day01::solver::Guest for Component {
     fn solve_a(input: Vec<(i32, i32)>) -> i32 {
         let (mut a, mut b) = input.into_iter().unzip::<i32, i32, Vec<_>, Vec<_>>();
         a.sort();

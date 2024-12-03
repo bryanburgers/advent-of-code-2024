@@ -1,0 +1,9 @@
+package aoc:base;
+
+interface day {
+    run: func(input: string) -> tuple<string, option<string>>;
+}
+
+world day-world {
+    export day;
+}

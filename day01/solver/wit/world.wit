@@ -1,0 +1,5 @@
+package aoc2024:day01-solver;
+
+world solver {
+    export aoc2024:day01/solver;
+}

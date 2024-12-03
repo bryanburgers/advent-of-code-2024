@@ -1,11 +1,19 @@
 [workspace]
 resolver = "2"
 members = [
-    "day-01",
-    "day-01/solver",
-    "day-02",
+    "runner",
+    "day01/solver",
+    "day01/parser",
+    "day02",
 ]
 
 [workspace.dependencies]
 anyhow = "1.0.93"
 wasmtime = { version = "27.0.0", features = ["component-model", "gc"] }
+
+[profile.release]
+codegen-units = 1
+opt-level = "s"
+debug = false
+strip = true
+lto = true

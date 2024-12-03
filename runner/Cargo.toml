@@ -1,8 +1,9 @@
 [package]
-name = "day-01"
+name = "runner"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 anyhow.workspace = true
+clap = { version = "4.5.21", features = ["derive"] }
 wasmtime.workspace = true
