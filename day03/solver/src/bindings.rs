@@ -53,8 +53,21 @@ pub mod exports {
                     let result1 = T::solve_a(_rt::string_lift(bytes0));
                     _rt::as_i32(result1)
                 }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_solve_b_cabi<T: Guest>(
+                    arg0: *mut u8,
+                    arg1: usize,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg1;
+                    let bytes0 = _rt::Vec::from_raw_parts(arg0.cast(), len0, len0);
+                    let result1 = T::solve_b(_rt::string_lift(bytes0));
+                    _rt::as_i32(result1)
+                }
                 pub trait Guest {
                     fn solve_a(input: _rt::String) -> i32;
+                    fn solve_b(input: _rt::String) -> i32;
                 }
                 #[doc(hidden)]
                 macro_rules! __export_aoc2024_day03_solver_cabi {
@@ -62,6 +75,9 @@ pub mod exports {
                         const _ : () = { #[export_name = "aoc2024:day03/solver#solve-a"]
                         unsafe extern "C" fn export_solve_a(arg0 : * mut u8, arg1 :
                         usize,) -> i32 { $($path_to_types)*:: _export_solve_a_cabi::<$ty
+                        > (arg0, arg1) } #[export_name = "aoc2024:day03/solver#solve-b"]
+                        unsafe extern "C" fn export_solve_b(arg0 : * mut u8, arg1 :
+                        usize,) -> i32 { $($path_to_types)*:: _export_solve_b_cabi::<$ty
                         > (arg0, arg1) } };
                     };
                 }
@@ -179,13 +195,13 @@ pub(crate) use __export_solver_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:aoc2024:day03-solver:solver:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 258] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x85\x01\x01A\x02\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 270] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x91\x01\x01A\x02\x01\
 A\x04\x01B\x02\x01@\x01\x05inputs\x01\0\x04\0\x04info\x01\0\x03\0\x0eaoc:base/de\
-bug\x05\0\x01B\x02\x01@\x01\x05inputs\0z\x04\0\x07solve-a\x01\0\x04\0\x14aoc2024\
-:day03/solver\x05\x01\x04\0\x1baoc2024:day03-solver/solver\x04\0\x0b\x0c\x01\0\x06\
-solver\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220\
-.0\x10wit-bindgen-rust\x060.35.0";
+bug\x05\0\x01B\x03\x01@\x01\x05inputs\0z\x04\0\x07solve-a\x01\0\x04\0\x07solve-b\
+\x01\0\x04\0\x14aoc2024:day03/solver\x05\x01\x04\0\x1baoc2024:day03-solver/solve\
+r\x04\0\x0b\x0c\x01\0\x06solver\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0d\
+wit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

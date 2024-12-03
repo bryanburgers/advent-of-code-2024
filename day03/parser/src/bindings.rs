@@ -27,6 +27,26 @@ pub mod aoc2024 {
                     ret
                 }
             }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn solve_b(input: &str) -> i32 {
+                unsafe {
+                    let vec0 = input;
+                    let ptr0 = vec0.as_ptr().cast::<u8>();
+                    let len0 = vec0.len();
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "aoc2024:day03/solver")]
+                    extern "C" {
+                        #[link_name = "solve-b"]
+                        fn wit_import(_: *mut u8, _: usize) -> i32;
+                    }
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(_: *mut u8, _: usize) -> i32 {
+                        unreachable!()
+                    }
+                    let ret = wit_import(ptr0.cast_mut(), len0);
+                    ret
+                }
+            }
         }
     }
 }
@@ -174,13 +194,13 @@ pub(crate) use __export_parser_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:aoc2024:day03-parser:parser:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 263] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x8a\x01\x01A\x02\x01\
-A\x04\x01B\x02\x01@\x01\x05inputs\0z\x04\0\x07solve-a\x01\0\x03\0\x14aoc2024:day\
-03/solver\x05\0\x01B\x04\x01ks\x01o\x02s\0\x01@\x01\x05inputs\0\x01\x04\0\x03run\
-\x01\x02\x04\0\x0caoc:base/day\x05\x01\x04\0\x1baoc2024:day03-parser/parser\x04\0\
-\x0b\x0c\x01\0\x06parser\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-\
-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 275] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x96\x01\x01A\x02\x01\
+A\x04\x01B\x03\x01@\x01\x05inputs\0z\x04\0\x07solve-a\x01\0\x04\0\x07solve-b\x01\
+\0\x03\0\x14aoc2024:day03/solver\x05\0\x01B\x04\x01ks\x01o\x02s\0\x01@\x01\x05in\
+puts\0\x01\x04\0\x03run\x01\x02\x04\0\x0caoc:base/day\x05\x01\x04\0\x1baoc2024:d\
+ay03-parser/parser\x04\0\x0b\x0c\x01\0\x06parser\x03\0\0\0G\x09producers\x01\x0c\
+processed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
