@@ -367,13 +367,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "day-02"
-version = "0.1.0"
-dependencies = [
- "anyhow",
-]
-
-[[package]]
 name = "day01_parser"
 version = "0.1.0"
 dependencies = [
@@ -382,6 +375,20 @@ dependencies = [
 
 [[package]]
 name = "day01_solver"
+version = "0.1.0"
+dependencies = [
+ "wit-bindgen-rt",
+]
+
+[[package]]
+name = "day02_parser"
+version = "0.1.0"
+dependencies = [
+ "wit-bindgen-rt",
+]
+
+[[package]]
+name = "day02_solver"
 version = "0.1.0"
 dependencies = [
  "wit-bindgen-rt",

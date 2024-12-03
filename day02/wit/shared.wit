@@ -1,0 +1,6 @@
+package aoc2024:day02;
+
+interface solver {
+    solve-a: func(input: list<list<s32>>) -> s32;
+    solve-b: func(input: list<list<s32>>) -> s32;
+}

@@ -1,30 +1,28 @@
-use std::ops::BitOr;
+#[allow(warnings)]
+mod bindings;
 
-fn main() -> anyhow::Result<()> {
-    let input = std::env::args()
-        .skip(1)
-        .next()
-        .ok_or_else(|| anyhow::anyhow!("input required"))?;
-    let input = std::fs::read_to_string(input)?;
+struct Component;
 
-    let mut count_part_a = 0;
-    let mut count_part_b = 0;
-    for line in input.trim().lines() {
-        let parts = line
-            .split_whitespace()
-            .map(|word| word.parse::<i32>().unwrap())
-            .collect::<Vec<_>>();
-        if is_valid_part_a(&parts) {
-            count_part_a += 1;
+impl bindings::exports::aoc2024::day02::solver::Guest for Component {
+    fn solve_a(input: Vec<Vec<i32>>) -> i32 {
+        let mut count = 0;
+        for parts in input {
+            if is_valid_part_a(&parts) {
+                count += 1;
+            }
         }
-        if is_valid_part_b_brute_force(&parts) {
-            count_part_b += 1;
-        }
+        count
     }
-    println!("{count_part_a}");
-    println!("{count_part_b}");
 
-    Ok(())
+    fn solve_b(input: Vec<Vec<i32>>) -> i32 {
+        let mut count = 0;
+        for parts in input {
+            if is_valid_part_b_brute_force(&parts) {
+                count += 1;
+            }
+        }
+        count
+    }
 }
 
 fn is_valid_part_a(input: &[i32]) -> bool {
@@ -83,7 +81,7 @@ impl Direction {
     }
 }
 
-impl BitOr for Direction {
+impl std::ops::BitOr for Direction {
     type Output = Self;
 
     fn bitor(self, rhs: Self) -> Self::Output {
@@ -107,3 +105,5 @@ impl BitOr for Direction {
         }
     }
 }
+
+bindings::export!(Component with_types_in bindings);
