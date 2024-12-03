@@ -1,0 +1,18 @@
+[package]
+name = "day03_solver"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+regex = "1.11.1"
+wit-bindgen-rt = { version = "0.36.0", features = ["bitflags"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[package.metadata.component]
+package = "aoc2024:day03-solver"
+
+[package.metadata.component.target.dependencies]
+"aoc2024:day03" = { path = "../wit" }
+"aoc:base" = { path = "../../wit" }

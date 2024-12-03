@@ -1,0 +1,5 @@
+package aoc2024:day03;
+
+interface solver {
+    solve-a: func(input: string) -> s32;
+}
