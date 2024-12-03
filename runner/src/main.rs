@@ -1,6 +1,5 @@
-use std::path::PathBuf;
-
 use clap::Parser;
+use std::path::PathBuf;
 
 wasmtime::component::bindgen!("day-world" in "../wit");
 
@@ -12,6 +11,14 @@ struct Args {
     input: PathBuf,
 }
 
+struct Debug;
+
+impl aoc::base::debug::Host for Debug {
+    fn info(&mut self, message: String) {
+        eprintln!("\x1b[36m\x1b[2minfo:\x1b[0m\x1b[36m {}\x1b[0m", message);
+    }
+}
+
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
 
@@ -19,8 +26,9 @@ fn main() -> anyhow::Result<()> {
     let input = std::fs::read_to_string(args.input)?;
 
     let engine = wasmtime::Engine::default();
-    let mut store = wasmtime::Store::new(&engine, ());
-    let linker = wasmtime::component::Linker::new(&engine);
+    let mut linker = wasmtime::component::Linker::new(&engine);
+    DayWorld::add_to_linker(&mut linker, |state: &mut Debug| state)?;
+    let mut store = wasmtime::Store::new(&engine, Debug);
     let component = wasmtime::component::Component::new(&engine, &bytes)?;
     let instance = DayWorld::instantiate(&mut store, &component, &linker)?;
 

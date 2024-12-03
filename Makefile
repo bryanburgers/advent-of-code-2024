@@ -1,4 +1,5 @@
 extern = $(shell find . -type f -name '*.rs' -o -name '*.toml' -o -name '*.wit')
+runner_extern = $(shell find wit runner -type f -name '*.rs' -o -name '*.toml' -o -name '*.wit')
 
 .SECONDARY:
 
@@ -21,8 +22,11 @@ build/%_solver.wasm: target/wasm32-unknown-unknown/release/%_solver.wasm
 build/%.wasm: build/%_parser.wasm build/%_solver.wasm
 	wac plug build/$*_parser.wasm --plug build/$*_solver.wasm --output $@
 
-%-example: build/%.wasm
-	cargo run --bin runner -- build/$*.wasm $*/example.txt
+target/release/runner: $(runner_extern)
+	cargo build --release --bin runner
 
-%-final: build/%.wasm
-	cargo run --bin runner -- build/$*.wasm $*/input.txt
+%-example: target/release/runner build/%.wasm
+	target/release/runner build/$*.wasm $*/example.txt
+
+%-final: target/release/runner build/%.wasm
+	target/release/runner build/$*.wasm $*/input.txt

@@ -4,6 +4,11 @@ interface day {
     run: func(input: string) -> tuple<string, option<string>>;
 }
 
+interface debug {
+    info: func(input: string);
+}
+
 world day-world {
     export day;
+    import debug;
 }
