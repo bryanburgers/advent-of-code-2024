@@ -17,6 +17,11 @@ impl solver::Guest for Component {
         let board = Board::from(input);
         board.find_xmases() as i32
     }
+
+    fn solve_b(input: Vec<Vec<solver::Letter>>) -> i32 {
+        let board = Board::from(input);
+        board.find_x_mases() as i32
+    }
 }
 
 #[derive(Debug)]
@@ -82,6 +87,25 @@ impl Board {
         letters[0].is_x() && letters[1].is_m() && letters[2].is_a() && letters[3].is_s()
     }
 
+    fn find_x_mases(&self) -> usize {
+        let mut accum = 0;
+        for x in 0..self.width() {
+            for y in 0..self.height() {
+                if self.find_x_mas_at(x, y) {
+                    accum += 1;
+                }
+            }
+        }
+        accum
+    }
+
+    fn find_x_mas_at(&self, x: usize, y: usize) -> bool {
+        let Some(x) = self.x(x, y) else {
+            return false;
+        };
+        x.is_mas()
+    }
+
     fn width(&self) -> usize {
         self.board[0].len()
     }
@@ -111,6 +135,42 @@ impl Board {
             y = (y as i32 + dy as i32) as usize;
         }
         Some(letters)
+    }
+
+    fn x(&self, x: usize, y: usize) -> Option<X> {
+        if x < 1 || y < 1 || x + 1 >= self.width() || y + 1 >= self.height() {
+            return None;
+        }
+
+        let tl = self.board[y - 1][x - 1];
+        let tr = self.board[y - 1][x + 1];
+        let bl = self.board[y + 1][x - 1];
+        let br = self.board[y + 1][x + 1];
+        let middle = self.board[y][x];
+        Some(X {
+            tl,
+            tr,
+            middle,
+            bl,
+            br,
+        })
+    }
+}
+
+#[derive(Copy, Clone, Debug)]
+struct X {
+    tl: Letter,
+    tr: Letter,
+    middle: Letter,
+    bl: Letter,
+    br: Letter,
+}
+
+impl X {
+    fn is_mas(&self) -> bool {
+        let tl_br_m_s = (self.tl.is_m() && self.br.is_s()) || (self.tl.is_s() && self.br.is_m());
+        let tr_bl_m_s = (self.tr.is_m() && self.bl.is_s()) || (self.tr.is_s() && self.bl.is_m());
+        tl_br_m_s && tr_bl_m_s && self.middle.is_a()
     }
 }
 

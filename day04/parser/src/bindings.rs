@@ -114,6 +114,76 @@ pub mod aoc2024 {
                     ret
                 }
             }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn solve_b(input: &[_rt::Vec<Letter>]) -> i32 {
+                unsafe {
+                    let mut cleanup_list = _rt::Vec::new();
+                    let vec1 = input;
+                    let len1 = vec1.len();
+                    let layout1 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec1.len() * 8,
+                        4,
+                    );
+                    let result1 = if layout1.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout1).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout1);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec1.into_iter().enumerate() {
+                        let base = result1.add(i * 8);
+                        {
+                            let vec0 = e;
+                            let len0 = vec0.len();
+                            let layout0 = _rt::alloc::Layout::from_size_align_unchecked(
+                                vec0.len() * 1,
+                                1,
+                            );
+                            let result0 = if layout0.size() != 0 {
+                                let ptr = _rt::alloc::alloc(layout0).cast::<u8>();
+                                if ptr.is_null() {
+                                    _rt::alloc::handle_alloc_error(layout0);
+                                }
+                                ptr
+                            } else {
+                                ::core::ptr::null_mut()
+                            };
+                            for (i, e) in vec0.into_iter().enumerate() {
+                                let base = result0.add(i * 1);
+                                {
+                                    *base.add(0).cast::<u8>() = (e.clone() as i32) as u8;
+                                }
+                            }
+                            *base.add(4).cast::<usize>() = len0;
+                            *base.add(0).cast::<*mut u8>() = result0;
+                            cleanup_list.extend_from_slice(&[(result0, layout0)]);
+                        }
+                    }
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "aoc2024:day04/solver")]
+                    extern "C" {
+                        #[link_name = "solve-b"]
+                        fn wit_import(_: *mut u8, _: usize) -> i32;
+                    }
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(_: *mut u8, _: usize) -> i32 {
+                        unreachable!()
+                    }
+                    let ret = wit_import(result1, len1);
+                    if layout1.size() != 0 {
+                        _rt::alloc::dealloc(result1.cast(), layout1);
+                    }
+                    for (ptr, layout) in cleanup_list {
+                        if layout.size() != 0 {
+                            _rt::alloc::dealloc(ptr.cast(), layout);
+                        }
+                    }
+                    ret
+                }
+            }
         }
     }
 }
@@ -261,14 +331,14 @@ pub(crate) use __export_parser_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:aoc2024:day04-parser:parser:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 292] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa7\x01\x01A\x02\x01\
-A\x04\x01B\x06\x01m\x04\x01x\x01m\x01a\x01s\x04\0\x06letter\x03\0\0\x01p\x01\x01\
-p\x02\x01@\x01\x05input\x03\0z\x04\0\x07solve-a\x01\x04\x03\0\x14aoc2024:day04/s\
-olver\x05\0\x01B\x04\x01ks\x01o\x02s\0\x01@\x01\x05inputs\0\x01\x04\0\x03run\x01\
-\x02\x04\0\x0caoc:base/day\x05\x01\x04\0\x1baoc2024:day04-parser/parser\x04\0\x0b\
-\x0c\x01\0\x06parser\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-comp\
-onent\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 304] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xb3\x01\x01A\x02\x01\
+A\x04\x01B\x07\x01m\x04\x01x\x01m\x01a\x01s\x04\0\x06letter\x03\0\0\x01p\x01\x01\
+p\x02\x01@\x01\x05input\x03\0z\x04\0\x07solve-a\x01\x04\x04\0\x07solve-b\x01\x04\
+\x03\0\x14aoc2024:day04/solver\x05\0\x01B\x04\x01ks\x01o\x02s\0\x01@\x01\x05inpu\
+ts\0\x01\x04\0\x03run\x01\x02\x04\0\x0caoc:base/day\x05\x01\x04\0\x1baoc2024:day\
+04-parser/parser\x04\0\x0b\x0c\x01\0\x06parser\x03\0\0\0G\x09producers\x01\x0cpr\
+ocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

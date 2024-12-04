@@ -112,8 +112,44 @@ pub mod exports {
                     let result5 = T::solve_a(result4);
                     _rt::as_i32(result5)
                 }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_solve_b_cabi<T: Guest>(
+                    arg0: *mut u8,
+                    arg1: usize,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let base4 = arg0;
+                    let len4 = arg1;
+                    let mut result4 = _rt::Vec::with_capacity(len4);
+                    for i in 0..len4 {
+                        let base = base4.add(i * 8);
+                        let e4 = {
+                            let l0 = *base.add(0).cast::<*mut u8>();
+                            let l1 = *base.add(4).cast::<usize>();
+                            let base3 = l0;
+                            let len3 = l1;
+                            let mut result3 = _rt::Vec::with_capacity(len3);
+                            for i in 0..len3 {
+                                let base = base3.add(i * 1);
+                                let e3 = {
+                                    let l2 = i32::from(*base.add(0).cast::<u8>());
+                                    Letter::_lift(l2 as u8)
+                                };
+                                result3.push(e3);
+                            }
+                            _rt::cabi_dealloc(base3, len3 * 1, 1);
+                            result3
+                        };
+                        result4.push(e4);
+                    }
+                    _rt::cabi_dealloc(base4, len4 * 8, 4);
+                    let result5 = T::solve_b(result4);
+                    _rt::as_i32(result5)
+                }
                 pub trait Guest {
                     fn solve_a(input: _rt::Vec<_rt::Vec<Letter>>) -> i32;
+                    fn solve_b(input: _rt::Vec<_rt::Vec<Letter>>) -> i32;
                 }
                 #[doc(hidden)]
                 macro_rules! __export_aoc2024_day04_solver_cabi {
@@ -121,6 +157,9 @@ pub mod exports {
                         const _ : () = { #[export_name = "aoc2024:day04/solver#solve-a"]
                         unsafe extern "C" fn export_solve_a(arg0 : * mut u8, arg1 :
                         usize,) -> i32 { $($path_to_types)*:: _export_solve_a_cabi::<$ty
+                        > (arg0, arg1) } #[export_name = "aoc2024:day04/solver#solve-b"]
+                        unsafe extern "C" fn export_solve_b(arg0 : * mut u8, arg1 :
+                        usize,) -> i32 { $($path_to_types)*:: _export_solve_b_cabi::<$ty
                         > (arg0, arg1) } };
                     };
                 }
@@ -238,14 +277,14 @@ pub(crate) use __export_solver_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:aoc2024:day04-solver:solver:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 287] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xa2\x01\x01A\x02\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 299] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xae\x01\x01A\x02\x01\
 A\x04\x01B\x02\x01@\x01\x05inputs\x01\0\x04\0\x04info\x01\0\x03\0\x0eaoc:base/de\
-bug\x05\0\x01B\x06\x01m\x04\x01x\x01m\x01a\x01s\x04\0\x06letter\x03\0\0\x01p\x01\
-\x01p\x02\x01@\x01\x05input\x03\0z\x04\0\x07solve-a\x01\x04\x04\0\x14aoc2024:day\
-04/solver\x05\x01\x04\0\x1baoc2024:day04-solver/solver\x04\0\x0b\x0c\x01\0\x06so\
-lver\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\
-\x10wit-bindgen-rust\x060.35.0";
+bug\x05\0\x01B\x07\x01m\x04\x01x\x01m\x01a\x01s\x04\0\x06letter\x03\0\0\x01p\x01\
+\x01p\x02\x01@\x01\x05input\x03\0z\x04\0\x07solve-a\x01\x04\x04\0\x07solve-b\x01\
+\x04\x04\0\x14aoc2024:day04/solver\x05\x01\x04\0\x1baoc2024:day04-solver/solver\x04\
+\0\x0b\x0c\x01\0\x06solver\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwi\
+t-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
