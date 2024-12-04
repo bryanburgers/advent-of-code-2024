@@ -1,0 +1,12 @@
+package aoc2024:day04;
+
+interface solver {
+    enum letter {
+        x,
+        m,
+        a,
+        s,
+    }
+
+    solve-a: func(input: list<list<letter>>) -> s32;
+}

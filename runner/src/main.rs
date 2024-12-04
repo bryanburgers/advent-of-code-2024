@@ -15,7 +15,13 @@ struct Debug;
 
 impl aoc::base::debug::Host for Debug {
     fn info(&mut self, message: String) {
-        eprintln!("\x1b[36m\x1b[2minfo:\x1b[0m\x1b[36m {}\x1b[0m", message);
+        for (idx, line) in message.lines().enumerate() {
+            if idx == 0 {
+                eprintln!("\x1b[36m\x1b[2minfo:\x1b[0m\x1b[36m {}\x1b[0m", line);
+            } else {
+                eprintln!("\x1b[36m\x1b[2m ... \x1b[0m\x1b[36m {}\x1b[0m", line);
+            }
+        }
     }
 }
 
