@@ -93,8 +93,43 @@ pub mod exports {
                     });
                     _rt::as_i32(result5)
                 }
+                #[doc(hidden)]
+                #[allow(non_snake_case)]
+                pub unsafe fn _export_solve_b_cabi<T: Guest>(
+                    arg0: *mut u8,
+                    arg1: usize,
+                    arg2: *mut u8,
+                    arg3: usize,
+                ) -> i32 {
+                    #[cfg(target_arch = "wasm32")] _rt::run_ctors_once();
+                    let len0 = arg1;
+                    let base4 = arg2;
+                    let len4 = arg3;
+                    let mut result4 = _rt::Vec::with_capacity(len4);
+                    for i in 0..len4 {
+                        let base = base4.add(i * 8);
+                        let e4 = {
+                            let l1 = *base.add(0).cast::<*mut u8>();
+                            let l2 = *base.add(4).cast::<usize>();
+                            let len3 = l2;
+                            _rt::Vec::from_raw_parts(l1.cast(), len3, len3)
+                        };
+                        result4.push(e4);
+                    }
+                    _rt::cabi_dealloc(base4, len4 * 8, 4);
+                    let result5 = T::solve_b(Input {
+                        page_ordering_rules: _rt::Vec::from_raw_parts(
+                            arg0.cast(),
+                            len0,
+                            len0,
+                        ),
+                        updates: result4,
+                    });
+                    _rt::as_i32(result5)
+                }
                 pub trait Guest {
                     fn solve_a(input: Input) -> i32;
+                    fn solve_b(input: Input) -> i32;
                 }
                 #[doc(hidden)]
                 macro_rules! __export_aoc2024_day05_solver_cabi {
@@ -103,6 +138,10 @@ pub mod exports {
                         unsafe extern "C" fn export_solve_a(arg0 : * mut u8, arg1 :
                         usize, arg2 : * mut u8, arg3 : usize,) -> i32 {
                         $($path_to_types)*:: _export_solve_a_cabi::<$ty > (arg0, arg1,
+                        arg2, arg3) } #[export_name = "aoc2024:day05/solver#solve-b"]
+                        unsafe extern "C" fn export_solve_b(arg0 : * mut u8, arg1 :
+                        usize, arg2 : * mut u8, arg3 : usize,) -> i32 {
+                        $($path_to_types)*:: _export_solve_b_cabi::<$ty > (arg0, arg1,
                         arg2, arg3) } };
                     };
                 }
@@ -220,15 +259,15 @@ pub(crate) use __export_solver_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:aoc2024:day05-solver:solver:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 352] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xe3\x01\x01A\x02\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 364] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xef\x01\x01A\x02\x01\
 A\x04\x01B\x02\x01@\x01\x05inputs\x01\0\x04\0\x04info\x01\0\x03\0\x0eaoc:base/de\
-bug\x05\0\x01B\x0a\x01o\x02zz\x04\0\x12page-ordering-rule\x03\0\0\x01pz\x04\0\x06\
+bug\x05\0\x01B\x0b\x01o\x02zz\x04\0\x12page-ordering-rule\x03\0\0\x01pz\x04\0\x06\
 update\x03\0\x02\x01p\x01\x01p\x03\x01r\x02\x13page-ordering-rules\x04\x07update\
 s\x05\x04\0\x05input\x03\0\x06\x01@\x01\x05input\x07\0z\x04\0\x07solve-a\x01\x08\
-\x04\0\x14aoc2024:day05/solver\x05\x01\x04\0\x1baoc2024:day05-solver/solver\x04\0\
-\x0b\x0c\x01\0\x06solver\x03\0\0\0G\x09producers\x01\x0cprocessed-by\x02\x0dwit-\
-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+\x04\0\x07solve-b\x01\x08\x04\0\x14aoc2024:day05/solver\x05\x01\x04\0\x1baoc2024\
+:day05-solver/solver\x04\0\x0b\x0c\x01\0\x06solver\x03\0\0\0G\x09producers\x01\x0c\
+processed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

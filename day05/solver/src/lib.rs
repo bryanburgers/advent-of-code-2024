@@ -28,6 +28,24 @@ impl solver::Guest for Component {
         }
         accum
     }
+
+    fn solve_b(input: solver::Input) -> i32 {
+        let input = Input::from(input);
+        let mut accum = 0;
+
+        for update in &input.updates {
+            if input.is_valid_update(update) {
+                continue;
+            }
+
+            let sorted = update.sorted(&input);
+            if !input.is_valid_update(&sorted) {
+                info!("still not valid {:?} -> {:?}", update.0, sorted.0);
+            }
+            accum += sorted.middle();
+        }
+        accum
+    }
 }
 
 bindings::export!(Component with_types_in bindings);
@@ -44,6 +62,16 @@ impl Input {
 
     pub fn is_valid_update(&self, update: &Update) -> bool {
         update.pairs().all(|pair| self.is_valid_page_pair(pair))
+    }
+
+    pub fn sort(&self, left: i32, right: i32) -> std::cmp::Ordering {
+        if self.page_ordering_rules.contains(&(left, right)) {
+            return std::cmp::Ordering::Less;
+        } else if self.page_ordering_rules.contains(&(right, left)) {
+            return std::cmp::Ordering::Greater;
+        } else {
+            return std::cmp::Ordering::Equal;
+        }
     }
 }
 
@@ -75,6 +103,12 @@ impl Update {
             i: 0,
             j: 1,
         }
+    }
+
+    pub fn sorted(&self, input: &Input) -> Self {
+        let mut values = self.0.clone();
+        values.sort_by(|a, b| input.sort(*a, *b));
+        Self(values)
     }
 }
 

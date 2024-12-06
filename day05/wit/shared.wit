@@ -9,4 +9,5 @@ interface solver {
     }
 
     solve-a: func(input: input) -> s32;
+    solve-b: func(input: input) -> s32;
 }

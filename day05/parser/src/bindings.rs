@@ -78,6 +78,58 @@ pub mod aoc2024 {
                     ret
                 }
             }
+            #[allow(unused_unsafe, clippy::all)]
+            pub fn solve_b(input: &Input) -> i32 {
+                unsafe {
+                    let Input {
+                        page_ordering_rules: page_ordering_rules0,
+                        updates: updates0,
+                    } = input;
+                    let vec1 = page_ordering_rules0;
+                    let ptr1 = vec1.as_ptr().cast::<u8>();
+                    let len1 = vec1.len();
+                    let vec3 = updates0;
+                    let len3 = vec3.len();
+                    let layout3 = _rt::alloc::Layout::from_size_align_unchecked(
+                        vec3.len() * 8,
+                        4,
+                    );
+                    let result3 = if layout3.size() != 0 {
+                        let ptr = _rt::alloc::alloc(layout3).cast::<u8>();
+                        if ptr.is_null() {
+                            _rt::alloc::handle_alloc_error(layout3);
+                        }
+                        ptr
+                    } else {
+                        ::core::ptr::null_mut()
+                    };
+                    for (i, e) in vec3.into_iter().enumerate() {
+                        let base = result3.add(i * 8);
+                        {
+                            let vec2 = e;
+                            let ptr2 = vec2.as_ptr().cast::<u8>();
+                            let len2 = vec2.len();
+                            *base.add(4).cast::<usize>() = len2;
+                            *base.add(0).cast::<*mut u8>() = ptr2.cast_mut();
+                        }
+                    }
+                    #[cfg(target_arch = "wasm32")]
+                    #[link(wasm_import_module = "aoc2024:day05/solver")]
+                    extern "C" {
+                        #[link_name = "solve-b"]
+                        fn wit_import(_: *mut u8, _: usize, _: *mut u8, _: usize) -> i32;
+                    }
+                    #[cfg(not(target_arch = "wasm32"))]
+                    fn wit_import(_: *mut u8, _: usize, _: *mut u8, _: usize) -> i32 {
+                        unreachable!()
+                    }
+                    let ret = wit_import(ptr1.cast_mut(), len1, result3, len3);
+                    if layout3.size() != 0 {
+                        _rt::alloc::dealloc(result3.cast(), layout3);
+                    }
+                    ret
+                }
+            }
         }
     }
 }
@@ -225,15 +277,16 @@ pub(crate) use __export_parser_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:aoc2024:day05-parser:parser:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 357] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xe8\x01\x01A\x02\x01\
-A\x04\x01B\x0a\x01o\x02zz\x04\0\x12page-ordering-rule\x03\0\0\x01pz\x04\0\x06upd\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 369] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\xf4\x01\x01A\x02\x01\
+A\x04\x01B\x0b\x01o\x02zz\x04\0\x12page-ordering-rule\x03\0\0\x01pz\x04\0\x06upd\
 ate\x03\0\x02\x01p\x01\x01p\x03\x01r\x02\x13page-ordering-rules\x04\x07updates\x05\
-\x04\0\x05input\x03\0\x06\x01@\x01\x05input\x07\0z\x04\0\x07solve-a\x01\x08\x03\0\
-\x14aoc2024:day05/solver\x05\0\x01B\x04\x01ks\x01o\x02s\0\x01@\x01\x05inputs\0\x01\
-\x04\0\x03run\x01\x02\x04\0\x0caoc:base/day\x05\x01\x04\0\x1baoc2024:day05-parse\
-r/parser\x04\0\x0b\x0c\x01\0\x06parser\x03\0\0\0G\x09producers\x01\x0cprocessed-\
-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.35.0";
+\x04\0\x05input\x03\0\x06\x01@\x01\x05input\x07\0z\x04\0\x07solve-a\x01\x08\x04\0\
+\x07solve-b\x01\x08\x03\0\x14aoc2024:day05/solver\x05\0\x01B\x04\x01ks\x01o\x02s\
+\0\x01@\x01\x05inputs\0\x01\x04\0\x03run\x01\x02\x04\0\x0caoc:base/day\x05\x01\x04\
+\0\x1baoc2024:day05-parser/parser\x04\0\x0b\x0c\x01\0\x06parser\x03\0\0\0G\x09pr\
+oducers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x06\
+0.35.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {
