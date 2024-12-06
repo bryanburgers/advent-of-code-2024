@@ -1,0 +1,9 @@
+package aoc2024:day06;
+
+interface solver {
+    type area = list<list<bool>>;
+    type position = tuple<u32, u32>;
+
+    solve-a: func(area: area, position: position) -> u32;
+    solve-b: func(area: area, position: position) -> u32;
+}
