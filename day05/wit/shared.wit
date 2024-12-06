@@ -1,0 +1,12 @@
+package aoc2024:day05;
+
+interface solver {
+    type page-ordering-rule = tuple<s32, s32>;
+    type update = list<s32>;
+    record input {
+        page-ordering-rules: list<page-ordering-rule>,
+        updates: list<update>,
+    }
+
+    solve-a: func(input: input) -> s32;
+}
