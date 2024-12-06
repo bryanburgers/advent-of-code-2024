@@ -34,7 +34,30 @@ impl solver::Guest for Component {
     }
 
     fn solve_b(area: Vec<Vec<bool>>, position: (u32, u32)) -> u32 {
-        0
+        let mut valid_block_locations = 0;
+        let area = Area::from(area);
+        let guard = Guard::new(position.into(), Direction::North);
+
+        for x in 0..area.width() {
+            for y in 0..area.height() {
+                let block = Position {
+                    x: x as i32,
+                    y: y as i32,
+                };
+                if guard.position == block {
+                    continue;
+                }
+                if area.is_tree(block) {
+                    continue;
+                }
+
+                if area.is_loop_if_blocked(block, guard) {
+                    valid_block_locations += 1;
+                } else {
+                }
+            }
+        }
+        valid_block_locations
     }
 }
 
@@ -71,6 +94,24 @@ impl Area {
     pub fn is_tree(&self, position: Position) -> bool {
         self.in_area(position) && self.0[position.y as usize][position.x as usize]
     }
+
+    pub fn is_loop_if_blocked(&self, block: Position, mut guard: Guard) -> bool {
+        let mut seen_guard_positions = HashSet::new();
+
+        while guard.is_in_area(&self) {
+            if !seen_guard_positions.insert(guard) {
+                return true;
+            }
+            let forward = guard.forward();
+            if forward == block || self.is_tree(forward) {
+                guard.direction = guard.direction.right();
+            } else {
+                guard.position = forward;
+            }
+        }
+
+        false
+    }
 }
 
 #[derive(Copy, Clone, Hash, Eq, PartialEq)]
@@ -94,7 +135,7 @@ impl std::fmt::Debug for Position {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Hash, Eq, PartialEq)]
 enum Direction {
     North,
     South,
@@ -124,6 +165,7 @@ impl std::fmt::Debug for Direction {
     }
 }
 
+#[derive(Copy, Clone, Hash, Eq, PartialEq)]
 struct Guard {
     position: Position,
     direction: Direction,
