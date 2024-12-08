@@ -1,0 +1,20 @@
+package aoc2024:day08;
+
+interface solver {
+    record position {
+        x: s32,
+        y: s32,
+    }
+    record antena {
+        frequency: char,
+        position: position,
+    }
+    record input {
+        area-width: s32,
+        area-height: s32,
+        antenas: list<antena>,
+    }
+    
+    solve-a: func(input: input) -> u64;
+    solve-b: func(input: input) -> u64;
+}
