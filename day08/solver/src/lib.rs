@@ -76,8 +76,6 @@ impl solver::Guest for Component {
         let mut antinode_positions = HashSet::new();
         for (_, positions) in antenas_by_frequency {
             for (position_one, position_two) in pairs(&positions) {
-                let (antinode_one, antinode_two) =
-                    Position::antinodes(*position_one, *position_two);
                 for antinode in Position::antinode_iterator(*position_one, *position_two) {
                     if area.contains_position(antinode) {
                         antinode_positions.insert(antinode);
