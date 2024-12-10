@@ -39,8 +39,24 @@ impl solver::Guest for Component {
         accum
     }
 
-    fn solve_b(_input: Vec<Vec<u8>>) -> u64 {
-        0
+    fn solve_b(input: Vec<Vec<u8>>) -> u64 {
+        let map = Map::from(input);
+
+        let mut accum = 0_u64;
+        let mut known_ratings = HashMap::new();
+        for y in 0..map.height() {
+            for x in 0..map.width() {
+                let point = Point {
+                    x: x as i64,
+                    y: y as i64,
+                };
+                if map.at(point) == 0 {
+                    accum += map.rating(point, &mut known_ratings);
+                }
+            }
+        }
+
+        accum
     }
 }
 
@@ -108,6 +124,36 @@ impl Map {
         }
 
         known_paths.insert(point, accum.clone());
+
+        accum
+    }
+
+    pub fn rating(&self, point: Point, known_ratings: &mut HashMap<Point, u64>) -> u64 {
+        if !self.in_bounds(point) {
+            return 0;
+        }
+
+        if let Some(r) = known_ratings.get(&point) {
+            return *r;
+        }
+
+        let value = self.at(point);
+        if value == 9 {
+            return 1;
+        }
+
+        let mut accum = 0;
+        for pt in [point.north(), point.south(), point.east(), point.west()]
+            .into_iter()
+            .filter(|pt| self.in_bounds(*pt))
+        {
+            let neighbor = self.at(pt);
+            if neighbor == value + 1 {
+                accum += self.rating(pt, known_ratings);
+            }
+        }
+
+        known_ratings.insert(point, accum);
 
         accum
     }
