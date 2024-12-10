@@ -12,10 +12,36 @@ impl bindings::exports::aoc::base::day::Guest for Component {
             map.push(row);
         }
 
-        let result_a = bindings::aoc2024::day10::solver::solve_a(&map);
-        let result_b = bindings::aoc2024::day10::solver::solve_b(&map);
+        let input = bindings::aoc2024::day10::types::TopographicalMap::new(&map);
+
+        let result_a = bindings::aoc2024::day10::solver::solve_a(&input);
+        let result_b = bindings::aoc2024::day10::solver::solve_b(&input);
 
         (result_a.to_string(), result_b.to_string())
+    }
+}
+
+struct MyTopographicalMap(Vec<Vec<u8>>);
+
+impl bindings::exports::aoc2024::day10::types::Guest for Component {
+    type TopographicalMap = MyTopographicalMap;
+}
+
+impl bindings::exports::aoc2024::day10::types::GuestTopographicalMap for MyTopographicalMap {
+    fn new(map: Vec<Vec<u8>>) -> Self {
+        MyTopographicalMap(map)
+    }
+
+    fn map_width(&self) -> u32 {
+        self.0[0].len() as u32
+    }
+
+    fn map_height(&self) -> u32 {
+        self.0.len() as u32
+    }
+
+    fn height_at_location(&self, x: u32, y: u32) -> u8 {
+        self.0[y as usize][x as usize]
     }
 }
 

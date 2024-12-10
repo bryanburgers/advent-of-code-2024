@@ -3,4 +3,5 @@ package aoc2024:day10-parser;
 world parser {
     export aoc:base/day;
     import aoc2024:day10/solver;
+    export aoc2024:day10/types;
 }
