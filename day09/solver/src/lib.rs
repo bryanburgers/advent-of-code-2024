@@ -1,5 +1,5 @@
 use std::{
-    collections::{HashMap, HashSet},
+    collections::HashSet,
     fmt::Debug,
     num::NonZero,
     ops::{Deref, DerefMut},
@@ -21,6 +21,72 @@ macro_rules! info {
 
 impl solver::Guest for Component {
     fn solve_a(input: Vec<u8>) -> u64 {
+        let mut disk = Disk::from(input);
+
+        for i in (0..disk.len()).rev() {
+            if !disk[i].is_free() {
+                let first_free = disk.first_free();
+                if i >= first_free {
+                    disk.swap(i, first_free);
+                }
+            }
+        }
+
+        disk.checksum()
+    }
+
+    fn solve_b(input: Vec<u8>) -> u64 {
+        // This is a huge mess and I don't care.
+        let mut disk = Disk::from(input);
+
+        let mut file_ids_checked = HashSet::new();
+
+        let mut last_checked = disk.len() - 1;
+        loop {
+            if let Block::File(file_id) = disk[last_checked] {
+                let mut len = 1;
+                let mut pos = last_checked;
+                for i in 1.. {
+                    let new_idx = last_checked - i;
+
+                    if disk[new_idx] == Block::File(file_id) {
+                        len = i + 1;
+                        pos = new_idx;
+                        if new_idx == 0 {
+                            break;
+                        }
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+                last_checked = pos.saturating_sub(1);
+
+                if file_ids_checked.insert(file_id) {
+                    if let Some(idx) = disk.find_first_free_space_of_len(pos, len) {
+                        disk.swap_chunk(idx, pos, len);
+                    }
+                }
+            } else {
+                last_checked = last_checked.saturating_sub(1);
+            }
+
+            if last_checked == 0 {
+                break;
+            }
+        }
+
+        disk.checksum()
+    }
+}
+
+bindings::export!(Component with_types_in bindings);
+
+#[derive(Default)]
+struct Disk(Vec<Block>);
+
+impl From<Vec<u8>> for Disk {
+    fn from(input: Vec<u8>) -> Self {
         let mut disk = Disk::default();
         for (idx, &val) in input.iter().enumerate() {
             if idx % 2 == 0 {
@@ -34,28 +100,9 @@ impl solver::Guest for Component {
                 }
             }
         }
-
-        for i in (0..disk.len()).rev() {
-            if !disk[i].is_free() {
-                let first_free = disk.first_free();
-                if i >= first_free {
-                    disk.swap(i, first_free);
-                }
-            }
-        }
-
-        disk.checksum() as u64
-    }
-
-    fn solve_b(_input: Vec<u8>) -> u64 {
-        0
+        disk
     }
 }
-
-bindings::export!(Component with_types_in bindings);
-
-#[derive(Default)]
-struct Disk(Vec<Block>);
 
 impl Disk {
     pub fn first_free(&self) -> usize {
@@ -75,6 +122,21 @@ impl Disk {
             }
         }
         checksum
+    }
+
+    pub fn find_first_free_space_of_len(&self, pos: usize, len: usize) -> Option<usize> {
+        for i in 0..pos {
+            if i + len < self.len() && self[i..][..len].iter().all(|block| block.is_free()) {
+                return Some(i);
+            }
+        }
+        None
+    }
+
+    pub fn swap_chunk(&mut self, start_a: usize, start_b: usize, len: usize) {
+        for i in 0..len {
+            self.swap(start_a + i, start_b + i);
+        }
     }
 }
 
@@ -104,7 +166,7 @@ impl DerefMut for Disk {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 enum Block {
     Free,
     File(FileId),
@@ -116,7 +178,7 @@ impl Block {
     }
 }
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Eq, PartialEq, Hash)]
 struct FileId(NonZero<u16>);
 
 impl Debug for FileId {
