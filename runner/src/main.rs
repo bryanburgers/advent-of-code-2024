@@ -40,9 +40,7 @@ fn main() -> anyhow::Result<()> {
 
     let (part1, part2) = instance.aoc_base_day().call_run(&mut store, &input)?;
     println!("{part1}");
-    if let Some(part2) = part2 {
-        println!("{part2}");
-    }
+    println!("{part2}");
 
     Ok(())
 }

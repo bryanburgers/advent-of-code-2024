@@ -131,20 +131,12 @@ pub mod exports {
                     ::core::mem::forget(vec4);
                     *ptr2.add(4).cast::<usize>() = len4;
                     *ptr2.add(0).cast::<*mut u8>() = ptr4.cast_mut();
-                    match t3_1 {
-                        Some(e) => {
-                            *ptr2.add(8).cast::<u8>() = (1i32) as u8;
-                            let vec5 = (e.into_bytes()).into_boxed_slice();
-                            let ptr5 = vec5.as_ptr().cast::<u8>();
-                            let len5 = vec5.len();
-                            ::core::mem::forget(vec5);
-                            *ptr2.add(16).cast::<usize>() = len5;
-                            *ptr2.add(12).cast::<*mut u8>() = ptr5.cast_mut();
-                        }
-                        None => {
-                            *ptr2.add(8).cast::<u8>() = (0i32) as u8;
-                        }
-                    };
+                    let vec5 = (t3_1.into_bytes()).into_boxed_slice();
+                    let ptr5 = vec5.as_ptr().cast::<u8>();
+                    let len5 = vec5.len();
+                    ::core::mem::forget(vec5);
+                    *ptr2.add(12).cast::<usize>() = len5;
+                    *ptr2.add(8).cast::<*mut u8>() = ptr5.cast_mut();
                     ptr2
                 }
                 #[doc(hidden)]
@@ -153,18 +145,12 @@ pub mod exports {
                     let l0 = *arg0.add(0).cast::<*mut u8>();
                     let l1 = *arg0.add(4).cast::<usize>();
                     _rt::cabi_dealloc(l0, l1, 1);
-                    let l2 = i32::from(*arg0.add(8).cast::<u8>());
-                    match l2 {
-                        0 => {}
-                        _ => {
-                            let l3 = *arg0.add(12).cast::<*mut u8>();
-                            let l4 = *arg0.add(16).cast::<usize>();
-                            _rt::cabi_dealloc(l3, l4, 1);
-                        }
-                    }
+                    let l2 = *arg0.add(8).cast::<*mut u8>();
+                    let l3 = *arg0.add(12).cast::<usize>();
+                    _rt::cabi_dealloc(l2, l3, 1);
                 }
                 pub trait Guest {
-                    fn run(input: _rt::String) -> (_rt::String, Option<_rt::String>);
+                    fn run(input: _rt::String) -> (_rt::String, _rt::String);
                 }
                 #[doc(hidden)]
                 macro_rules! __export_aoc_base_day_cabi {
@@ -180,9 +166,9 @@ pub mod exports {
                 #[doc(hidden)]
                 pub(crate) use __export_aoc_base_day_cabi;
                 #[repr(align(4))]
-                struct _RetArea([::core::mem::MaybeUninit<u8>; 20]);
+                struct _RetArea([::core::mem::MaybeUninit<u8>; 16]);
                 static mut _RET_AREA: _RetArea = _RetArea(
-                    [::core::mem::MaybeUninit::uninit(); 20],
+                    [::core::mem::MaybeUninit::uninit(); 16],
                 );
             }
         }
@@ -245,14 +231,14 @@ pub(crate) use __export_parser_impl as export;
 #[cfg(target_arch = "wasm32")]
 #[link_section = "component-type:wit-bindgen:0.35.0:aoc2024:day02-parser:parser:encoded world"]
 #[doc(hidden)]
-pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 281] = *b"\
-\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x9c\x01\x01A\x02\x01\
+pub static __WIT_BINDGEN_COMPONENT_TYPE: [u8; 278] = *b"\
+\0asm\x0d\0\x01\0\0\x19\x16wit-component-encoding\x04\0\x07\x99\x01\x01A\x02\x01\
 A\x04\x01B\x05\x01pz\x01p\0\x01@\x01\x05input\x01\0z\x04\0\x07solve-a\x01\x02\x04\
-\0\x07solve-b\x01\x02\x03\0\x14aoc2024:day02/solver\x05\0\x01B\x04\x01ks\x01o\x02\
-s\0\x01@\x01\x05inputs\0\x01\x04\0\x03run\x01\x02\x04\0\x0caoc:base/day\x05\x01\x04\
-\0\x1baoc2024:day02-parser/parser\x04\0\x0b\x0c\x01\0\x06parser\x03\0\0\0G\x09pr\
-oducers\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x06\
-0.35.0";
+\0\x07solve-b\x01\x02\x03\0\x14aoc2024:day02/solver\x05\0\x01B\x03\x01o\x02ss\x01\
+@\x01\x05inputs\0\0\x04\0\x03run\x01\x01\x04\0\x0caoc:base/day\x05\x01\x04\0\x1b\
+aoc2024:day02-parser/parser\x04\0\x0b\x0c\x01\0\x06parser\x03\0\0\0G\x09producer\
+s\x01\x0cprocessed-by\x02\x0dwit-component\x070.220.0\x10wit-bindgen-rust\x060.3\
+5.0";
 #[inline(never)]
 #[doc(hidden)]
 pub fn __link_custom_section_describing_imports() {

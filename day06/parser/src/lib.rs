@@ -4,7 +4,7 @@ mod bindings;
 struct Component;
 
 impl bindings::exports::aoc::base::day::Guest for Component {
-    fn run(input: String) -> (String, Option<String>) {
+    fn run(input: String) -> (String, String) {
         let mut area = Vec::new();
         let mut position = None;
 
@@ -30,7 +30,7 @@ impl bindings::exports::aoc::base::day::Guest for Component {
         let result_a = bindings::aoc2024::day06::solver::solve_a(&area, position);
         let result_b = bindings::aoc2024::day06::solver::solve_b(&area, position);
 
-        (result_a.to_string(), Some(result_b.to_string()))
+        (result_a.to_string(), result_b.to_string())
     }
 }
 
