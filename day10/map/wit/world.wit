@@ -1,0 +1,5 @@
+package aoc2024:day10-map;
+
+world map {
+    export aoc2024:day10/types;
+}

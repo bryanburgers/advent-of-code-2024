@@ -503,6 +503,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "day10_map"
+version = "0.1.0"
+dependencies = [
+ "wit-bindgen-rt",
+]
+
+[[package]]
 name = "day10_parser"
 version = "0.1.0"
 dependencies = [

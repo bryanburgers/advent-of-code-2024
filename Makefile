@@ -30,3 +30,11 @@ target/release/runner: $(runner_extern)
 
 %-final: target/release/runner build/%.wasm
 	target/release/runner build/$*.wasm $*/input.txt
+
+build/day10_map.wasm: target/wasm32-unknown-unknown/release/day10_map.wasm
+	mkdir -p build
+	cp $^ $@
+
+build/day10.wasm: build/day10_parser.wasm build/day10_solver.wasm build/day10_map.wasm
+	wac plug build/day10_parser.wasm  --plug build/day10_solver.wasm --output build/day10_without_map.wasm
+	wac plug build/day10_without_map.wasm --plug build/day10_map.wasm --output build/day10.wasm
