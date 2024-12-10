@@ -12,8 +12,10 @@ impl bindings::exports::aoc::base::day::Guest for Component {
             map.push(row);
         }
 
-        let result_a = bindings::aoc2024::day10::solver::solve_a(&map);
-        let result_b = bindings::aoc2024::day10::solver::solve_b(&map);
+        let input = bindings::aoc2024::day10::types::TopographicalMap::new(&map);
+
+        let result_a = bindings::aoc2024::day10::solver::solve_a(&input);
+        let result_b = bindings::aoc2024::day10::solver::solve_b(&input);
 
         (result_a.to_string(), result_b.to_string())
     }

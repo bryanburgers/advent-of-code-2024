@@ -1,6 +1,16 @@
 package aoc2024:day10;
 
-interface solver {    
-    solve-a: func(input: list<list<u8>>) -> u64;
-    solve-b: func(input: list<list<u8>>) -> u64;
+interface types {
+    resource topographical-map {
+        constructor(map: list<list<u8>>);
+        map-width: func() -> u32;
+        map-height: func() -> u32;
+        height-at-location: func(x: u32, y: u32) -> u8;
+    }
+}
+
+interface solver {
+    use types.{topographical-map};
+    solve-a: func(input: borrow<topographical-map>) -> u64;
+    solve-b: func(input: borrow<topographical-map>) -> u64;
 }

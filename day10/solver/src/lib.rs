@@ -18,7 +18,7 @@ macro_rules! info {
 }
 
 impl solver::Guest for Component {
-    fn solve_a(input: Vec<Vec<u8>>) -> u64 {
+    fn solve_a(input: solver::TopographicalMapBorrow<'_>) -> u64 {
         let map = Map::from(input);
 
         let mut accum = 0_u64;
@@ -39,7 +39,7 @@ impl solver::Guest for Component {
         accum
     }
 
-    fn solve_b(input: Vec<Vec<u8>>) -> u64 {
+    fn solve_b(input: solver::TopographicalMapBorrow<'_>) -> u64 {
         let map = Map::from(input);
 
         let mut accum = 0_u64;
@@ -60,30 +60,59 @@ impl solver::Guest for Component {
     }
 }
 
-bindings::export!(Component with_types_in bindings);
+struct MyTopographicalMap(Vec<Vec<u8>>);
 
-struct Map {
-    data: Vec<Vec<u8>>,
+impl bindings::exports::aoc2024::day10::types::Guest for Component {
+    type TopographicalMap = MyTopographicalMap;
 }
 
-impl From<Vec<Vec<u8>>> for Map {
-    fn from(data: Vec<Vec<u8>>) -> Self {
+impl bindings::exports::aoc2024::day10::types::GuestTopographicalMap for MyTopographicalMap {
+    fn new(map: Vec<Vec<u8>>) -> Self {
+        MyTopographicalMap(map)
+    }
+
+    fn map_width(&self) -> u32 {
+        self.0[0].len() as u32
+    }
+
+    fn map_height(&self) -> u32 {
+        self.0.len() as u32
+    }
+
+    fn height_at_location(&self, x: u32, y: u32) -> u8 {
+        self.0[y as usize][x as usize]
+    }
+}
+
+bindings::export!(Component with_types_in bindings);
+
+struct Map<'a> {
+    data: solver::TopographicalMapBorrow<'a>,
+}
+
+impl<'a> From<solver::TopographicalMapBorrow<'a>> for Map<'a> {
+    fn from(data: solver::TopographicalMapBorrow<'a>) -> Self {
         Self { data }
     }
 }
 
-impl Map {
+impl Map<'_> {
     pub fn width(&self) -> usize {
-        self.data[0].len()
+        use crate::bindings::exports::aoc2024::day10::types::GuestTopographicalMap;
+        self.data.get::<MyTopographicalMap>().map_width() as usize
     }
 
     pub fn height(&self) -> usize {
-        self.data.len()
+        use crate::bindings::exports::aoc2024::day10::types::GuestTopographicalMap;
+        self.data.get::<MyTopographicalMap>().map_height() as usize
     }
 
     pub fn at(&self, point: Point) -> u8 {
         assert!(self.in_bounds(point));
-        self.data[point.y as usize][point.x as usize]
+        use crate::bindings::exports::aoc2024::day10::types::GuestTopographicalMap;
+        self.data
+            .get::<MyTopographicalMap>()
+            .height_at_location(point.x as u32, point.y as u32)
     }
 
     pub fn in_bounds(&self, point: Point) -> bool {
@@ -159,7 +188,7 @@ impl Map {
     }
 }
 
-impl Debug for Map {
+impl Debug for Map<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for y in 0..self.width() {
             for x in 0..self.height() {
