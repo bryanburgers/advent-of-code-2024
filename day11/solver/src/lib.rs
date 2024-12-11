@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{HashMap, VecDeque};
 
 use bindings::exports::aoc2024::day11::solver;
 
@@ -27,12 +27,39 @@ impl solver::Guest for Component {
         stones.iter().map(|f| f.count()).sum()
     }
 
-    fn solve_b(_input: Vec<u64>) -> u64 {
-        0
+    fn solve_b(input: Vec<u64>) -> u64 {
+        const STEPS: u64 = 75;
+        let mut cache = HashMap::new();
+
+        let mut count = 0;
+        for i in input {
+            count += recursive_with_cache(i, STEPS, &mut cache);
+        }
+        count
     }
 }
 
 bindings::export!(Component with_types_in bindings);
+
+fn recursive_with_cache(value: u64, steps: u64, cache: &mut HashMap<(u64, u64), u64>) -> u64 {
+    if steps == 0 {
+        return 1;
+    }
+
+    if let Some(&count) = cache.get(&(value, steps)) {
+        count
+    } else {
+        let count = match step(value) {
+            Either::Left(value) => recursive_with_cache(value, steps - 1, cache),
+            Either::Right((top, bottom)) => {
+                recursive_with_cache(top, steps - 1, cache)
+                    + recursive_with_cache(bottom, steps - 1, cache)
+            }
+        };
+        cache.insert((value, steps), count);
+        count
+    }
+}
 
 enum Stone {
     Value(u64),
