@@ -1,7 +1,11 @@
 package aoc:base;
 
 interface day {
-    run: func(input: string) -> tuple<string, string>;
+    resource runner {
+        constructor(input: string);
+        solve-a: func() -> string;
+        solve-b: func() -> string;
+    }
 }
 
 interface debug {

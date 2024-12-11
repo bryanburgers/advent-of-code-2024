@@ -1,5 +1,5 @@
 use clap::Parser;
-use std::path::PathBuf;
+use std::{path::PathBuf, time::Instant};
 
 wasmtime::component::bindgen!("day-world" in "../wit");
 
@@ -38,9 +38,27 @@ fn main() -> anyhow::Result<()> {
     let component = wasmtime::component::Component::new(&engine, &bytes)?;
     let instance = DayWorld::instantiate(&mut store, &component, &linker)?;
 
-    let (part1, part2) = instance.aoc_base_day().call_run(&mut store, &input)?;
+    let runner = instance.aoc_base_day().runner();
+    let resource = runner.call_constructor(&mut store, &input)?;
+
+    let start = Instant::now();
+    let part1 = runner.call_solve_a(&mut store, resource)?;
+    println!(
+        "\x1b[4m\x1b[36mPart 1\x1b[0m \x1b[35m{:1.1?}\x1b[0m",
+        start.elapsed()
+    );
     println!("{part1}");
+    println!();
+
+    let start = Instant::now();
+    let part2 = runner.call_solve_b(&mut store, resource)?;
+    println!(
+        "\x1b[4m\x1b[36mPart 2\x1b[0m \x1b[35m{:1.1?}\x1b[0m",
+        start.elapsed()
+    );
     println!("{part2}");
+
+    resource.resource_drop(&mut store)?;
 
     Ok(())
 }

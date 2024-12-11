@@ -4,7 +4,13 @@ mod bindings;
 struct Component;
 
 impl bindings::exports::aoc::base::day::Guest for Component {
-    fn run(input: String) -> (String, String) {
+    type Runner = Runner;
+}
+
+struct Runner(Vec<Vec<bool>>, (u32, u32));
+
+impl bindings::exports::aoc::base::day::GuestRunner for Runner {
+    fn new(input: String) -> Self {
         let mut area = Vec::new();
         let mut position = None;
 
@@ -27,10 +33,15 @@ impl bindings::exports::aoc::base::day::Guest for Component {
 
         let position = position.unwrap();
 
-        let result_a = bindings::aoc2024::day06::solver::solve_a(&area, position);
-        let result_b = bindings::aoc2024::day06::solver::solve_b(&area, position);
+        Runner(area, position)
+    }
 
-        (result_a.to_string(), result_b.to_string())
+    fn solve_a(&self) -> String {
+        bindings::aoc2024::day06::solver::solve_a(&self.0, self.1).to_string()
+    }
+
+    fn solve_b(&self) -> String {
+        bindings::aoc2024::day06::solver::solve_b(&self.0, self.1).to_string()
     }
 }
 

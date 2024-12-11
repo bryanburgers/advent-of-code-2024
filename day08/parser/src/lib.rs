@@ -4,7 +4,13 @@ mod bindings;
 struct Component;
 
 impl bindings::exports::aoc::base::day::Guest for Component {
-    fn run(input: String) -> (String, String) {
+    type Runner = Runner;
+}
+
+struct Runner(bindings::aoc2024::day08::solver::Input);
+
+impl bindings::exports::aoc::base::day::GuestRunner for Runner {
+    fn new(input: String) -> Self {
         let mut max_x = 0;
         let mut max_y = 0;
         let mut antenas = Vec::new();
@@ -38,10 +44,16 @@ impl bindings::exports::aoc::base::day::Guest for Component {
             area_height: max_y as i32 + 1,
             antenas,
         };
-        let result_a = bindings::aoc2024::day08::solver::solve_a(&input);
-        let result_b = bindings::aoc2024::day08::solver::solve_b(&input);
 
-        (result_a.to_string(), result_b.to_string())
+        Runner(input)
+    }
+
+    fn solve_a(&self) -> String {
+        bindings::aoc2024::day08::solver::solve_a(&self.0).to_string()
+    }
+
+    fn solve_b(&self) -> String {
+        bindings::aoc2024::day08::solver::solve_b(&self.0).to_string()
     }
 }
 

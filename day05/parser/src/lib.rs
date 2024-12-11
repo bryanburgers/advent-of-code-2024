@@ -6,7 +6,13 @@ mod bindings;
 struct Component;
 
 impl bindings::exports::aoc::base::day::Guest for Component {
-    fn run(input: String) -> (String, String) {
+    type Runner = Runner;
+}
+
+struct Runner(Input);
+
+impl bindings::exports::aoc::base::day::GuestRunner for Runner {
+    fn new(input: String) -> Self {
         let mut page_ordering_rules = Vec::new();
         let mut updates = Vec::new();
 
@@ -33,10 +39,15 @@ impl bindings::exports::aoc::base::day::Guest for Component {
             updates,
         };
 
-        let result_a = bindings::aoc2024::day05::solver::solve_a(&input);
-        let result_b = bindings::aoc2024::day05::solver::solve_b(&input);
+        Runner(input)
+    }
 
-        (result_a.to_string(), result_b.to_string())
+    fn solve_a(&self) -> String {
+        bindings::aoc2024::day05::solver::solve_a(&self.0).to_string()
+    }
+
+    fn solve_b(&self) -> String {
+        bindings::aoc2024::day05::solver::solve_b(&self.0).to_string()
     }
 }
 
