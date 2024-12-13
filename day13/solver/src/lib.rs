@@ -24,15 +24,22 @@ impl solver::Guest for Component {
         accum
     }
 
-    fn solve_b(_input: Vec<solver::Machine>) -> u64 {
-        0
+    fn solve_b(input: Vec<solver::Machine>) -> u64 {
+        let mut accum = 0;
+        for machine in input {
+            if let Some((a, b)) = machine.solve_b() {
+                let cost = a * 3 + b;
+                accum += cost;
+            }
+        }
+        accum
     }
 }
 
 bindings::export!(Component with_types_in bindings);
 
 impl solver::Machine {
-    fn solve(&self) -> Option<(u64, u64)> {
+    fn solve_inner(&self, px: i64, py: i64) -> Option<(u64, u64)> {
         // Ax * a + Bx * b = Px
         // Ay * a + By * b = Py
 
@@ -49,7 +56,7 @@ impl solver::Machine {
         // And dividing
         // b = ((Px * Ay) - (Py * Ax)) / (Bx * Ay - By * Ax)
 
-        let b = ((self.prize.x * self.button_a.y) - (self.prize.y * self.button_a.x))
+        let b = ((px * self.button_a.y) - (py * self.button_a.x))
             / (self.button_b.x * self.button_a.y - self.button_b.y * self.button_a.x);
 
         // Now we can substitute b back into the first equation
@@ -59,16 +66,24 @@ impl solver::Machine {
 
         // a = (Px - (Bx * b)) / Ax
 
-        let a = (self.prize.x - (self.button_b.x * b)) / self.button_a.x;
+        let a = (px - (self.button_b.x * b)) / self.button_a.x;
 
         // And finally, we need to make sure the solution is valid
-        if self.button_a.x * a + self.button_b.x * b == self.prize.x
-            && self.button_a.y * a + self.button_b.y * b == self.prize.y
+        if self.button_a.x * a + self.button_b.x * b == px
+            && self.button_a.y * a + self.button_b.y * b == py
         {
             Some((a as u64, b as u64))
         } else {
             None
         }
+    }
+
+    fn solve(&self) -> Option<(u64, u64)> {
+        self.solve_inner(self.prize.x, self.prize.y)
+    }
+
+    fn solve_b(&self) -> Option<(u64, u64)> {
+        self.solve_inner(self.prize.x + 10000000000000, self.prize.y + 10000000000000)
     }
 }
 
