@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use bindings::exports::aoc2024::day14::solver::{self};
 
@@ -35,8 +35,27 @@ impl solver::Guest for Component {
             .product()
     }
 
-    fn solve_b(_input: solver::Input) -> u64 {
-        0
+    fn solve_b(input: solver::Input) -> u64 {
+        let input = Input::from(input);
+        let mut current_max = (0, 0);
+        for i in 0..=10000 {
+            let mut tree_detector = TreeDetector::default();
+            let mut debugger = Debugger::new(input.size);
+            for robot in &input.robots {
+                let stepped = robot.step_n(i, input.size);
+                debugger.add(stepped);
+                tree_detector.add(stepped);
+            }
+
+            let score = tree_detector.score();
+            if score > current_max.1 {
+                current_max = (i, score);
+                info!("After {i} steps, score={score}:\n{debugger}");
+                info!("");
+            }
+        }
+
+        current_max.0 as u64
     }
 }
 
@@ -237,6 +256,42 @@ impl std::fmt::Display for Debugger {
             writeln!(f)?;
         }
         Ok(())
+    }
+}
+
+#[derive(Default)]
+struct TreeDetector {
+    positions: HashSet<Position>,
+}
+
+impl TreeDetector {
+    fn add(&mut self, robot: Robot) {
+        self.positions.insert(robot.position);
+    }
+
+    fn score(&self) -> u64 {
+        let mut score = 0;
+        let up = Velocity { x: 0, y: -1 };
+        let down = Velocity { x: 0, y: 1 };
+        let left = Velocity { x: -1, y: 0 };
+        let right = Velocity { x: 1, y: 0 };
+
+        for position in &self.positions {
+            if self.positions.contains(&(*position + up)) {
+                score += 1;
+            }
+            if self.positions.contains(&(*position + down)) {
+                score += 1;
+            }
+            if self.positions.contains(&(*position + left)) {
+                score += 1;
+            }
+            if self.positions.contains(&(*position + right)) {
+                score += 1;
+            }
+        }
+
+        score
     }
 }
 
