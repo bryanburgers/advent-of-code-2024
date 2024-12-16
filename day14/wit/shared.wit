@@ -1,0 +1,27 @@
+package aoc2024:day14;
+
+interface solver {
+    record position {
+        x: s64,
+        y: s64,
+    }
+    record velocity {
+        x: s64,
+        y: s64,
+    }
+    record robot {
+        position: position,
+        velocity: velocity,
+    }
+    record size {
+        width: s64,
+        height: s64,
+    }
+    record input {
+        robots: list<robot>,
+        size: size,
+    }
+
+    solve-a: func(input: input) -> u64;
+    solve-b: func(input: input) -> u64;
+}

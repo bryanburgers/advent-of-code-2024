@@ -1,0 +1,6 @@
+package aoc2024:day14-solver;
+
+world solver {
+    export aoc2024:day14/solver;
+    import aoc:base/debug;
+}
