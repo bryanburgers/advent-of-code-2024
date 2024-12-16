@@ -1,0 +1,30 @@
+package aoc2024:day15;
+
+interface solver {
+    record position {
+        x: s64,
+        y: s64,
+    }
+    enum tile-type {
+        wall,
+        box,
+    }
+    record tile {
+        position: position,
+        %type: tile-type,
+    }
+    enum move {
+        north,
+        south,
+        east,
+        west,
+    }
+    record input {
+        lantern-fish: position,
+        tiles: list<tile>,
+        moves: list<move>,
+    }
+
+    solve-a: func(input: input) -> s64;
+    solve-b: func(input: input) -> s64;
+}

@@ -166,6 +166,7 @@ impl From<solver::Velocity> for Velocity {
 }
 
 impl Robot {
+    #[allow(dead_code)]
     fn step(&self, size: Size) -> Robot {
         Robot {
             position: (self.position + self.velocity) % size,
