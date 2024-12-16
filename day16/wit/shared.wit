@@ -1,0 +1,12 @@
+package aoc2024:day16;
+
+interface solver {
+    enum tile {
+        open,
+        wall,
+        start,
+        end,
+    }
+    solve-a: func(input: list<list<tile>>) -> u64;
+    solve-b: func(input: list<list<tile>>) -> u64;
+}

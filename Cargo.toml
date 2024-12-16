@@ -32,6 +32,8 @@ members = [
     "day14/parser",
     "day15/solver",
     "day15/parser",
+    "day16/solver",
+    "day16/parser",
 ]
 
 [workspace.dependencies]
