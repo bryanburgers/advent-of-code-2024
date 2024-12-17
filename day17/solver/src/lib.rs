@@ -1,3 +1,5 @@
+use std::collections::VecDeque;
+
 use bindings::exports::aoc2024::day17::solver::{self};
 
 #[allow(warnings)]
@@ -18,14 +20,41 @@ impl solver::Guest for Component {
         machine.run()
     }
 
-    fn solve_b(_input: solver::Machine) -> u64 {
+    fn solve_b(input: solver::Machine) -> u64 {
+        let machine = Machine::from(input);
+
+        let mut options = VecDeque::from([Words::from(0)]);
+
+        while let Some(option) = options.pop_front() {
+            for i in 0..8 {
+                let a = option.append_digit(i);
+                let mut machine = machine.clone();
+                machine.register_a = a.into();
+                let output = machine.run();
+
+                // info!(
+                //     "A={a} output={}",
+                //     OutputDiff(
+                //         &output,
+                //         &machine.program[machine.program.len() - output.len()..]
+                //     ),
+                // );
+                if &output == &machine.program {
+                    return a.into();
+                }
+                if &output == &machine.program[machine.program.len() - output.len()..] {
+                    options.push_back(a);
+                }
+            }
+        }
+
         0
     }
 }
 
 bindings::export!(Component with_types_in bindings);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Machine {
     ip: usize,
     register_a: u64,
@@ -151,6 +180,92 @@ impl Machine {
         let result = numerator >> denominator;
         self.register_c = result;
         self.ip += 2;
+    }
+}
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
+struct Words(u64);
+
+impl Words {
+    pub fn append_digit(self, val: u8) -> Self {
+        Self((self.0 << 3) + val as u64)
+    }
+}
+
+impl<const N: usize> From<[u8; N]> for Words {
+    fn from(value: [u8; N]) -> Self {
+        let mut accum = 0;
+        for i in 0..N {
+            accum = (accum << 3) + (value[i] as u64);
+        }
+        Words(accum)
+    }
+}
+
+impl From<Vec<u8>> for Words {
+    fn from(value: Vec<u8>) -> Self {
+        let mut accum = 0;
+        for v in value {
+            accum = (accum << 3) + (v as u64);
+        }
+        Words(accum)
+    }
+}
+
+impl From<u64> for Words {
+    fn from(value: u64) -> Self {
+        Words(value)
+    }
+}
+
+impl From<Words> for u64 {
+    fn from(value: Words) -> Self {
+        value.0
+    }
+}
+
+impl std::fmt::Display for Words {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        if self.0 == 0 {
+            write!(f, "0")?;
+            return Ok(());
+        }
+
+        let mut digits = Vec::new();
+        let mut value = self.0;
+        while value > 0 {
+            digits.push(value % 8);
+            value = value >> 3;
+        }
+        digits.reverse();
+        if let Some(width) = f.width() {
+            let pad = width.saturating_sub(digits.len());
+            for _ in 0..pad {
+                f.write_str(" ")?;
+            }
+        }
+
+        for digit in digits {
+            write!(f, "{}", digit)?;
+        }
+        Ok(())
+    }
+}
+
+#[allow(dead_code)]
+struct OutputDiff<'a>(&'a [u8], &'a [u8]);
+
+impl std::fmt::Display for OutputDiff<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for (left, right) in self.0.iter().zip(self.1.iter()) {
+            if left == right {
+                write!(f, "\x1b[32m{left}")?;
+            } else {
+                write!(f, "\x1b[31m{left}")?;
+            }
+        }
+        write!(f, "\x1b[0m")?;
+        Ok(())
     }
 }
 
