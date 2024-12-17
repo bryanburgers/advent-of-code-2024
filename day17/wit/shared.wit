@@ -1,0 +1,12 @@
+package aoc2024:day17;
+
+interface solver {
+    record machine {
+        register-a: u64,
+        register-b: u64,
+        register-c: u64,
+        program: list<u8>,
+    }
+    solve-a: func(input: machine) -> list<u8>;
+    solve-b: func(input: machine) -> u64;
+}
